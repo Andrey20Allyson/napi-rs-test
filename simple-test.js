@@ -1,3 +1,13 @@
-const { times2 } = require('./index')
+const { times2, Car, walkWithCar } = require('./index')
 
-console.log(times2(12))
+// const arr1 = [1, 2, 3]
+// const arr2 = times2(arr1)
+
+// console.log(arr1)
+// console.log(arr2)
+
+const car = walkWithCar()
+
+car.setName('Gol')
+
+console.log(car.getName())
