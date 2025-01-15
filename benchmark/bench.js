@@ -1,19 +1,28 @@
 const { Bench } = require('tinybench')
 
-const { times2Num } = require('../index.js')
+const { fibb } = require('../index.js')
 
-function times2Js(num) {
-  return num * 2
+function fibbJs(pos) {
+  let current = 0
+  let prev = 1
+
+  for (let i = 0; i < pos; i++) {
+    let temp = current
+    current = current + prev
+    prev = temp
+  }
+
+  return current
 }
 
 const b = new Bench()
 
 b.add('Native times 2', () => {
-  times2Num(255)
+  fibb(100_000)
 })
 
 b.add('JavaScript times 2', () => {
-  times2Js(255)
+  fibbJs(100_000)
 })
 
 b.run().then(() => console.table(b.table()))
