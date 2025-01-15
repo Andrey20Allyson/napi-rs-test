@@ -45,8 +45,8 @@
   "scripts": {
     "artifacts": "napi artifacts",
     "bench": "node benchmark/bench.js",
-    "build": "napi build --platform --release",
-    "build:debug": "napi build --platform",
+    "build": "napi build --platform --release native-dist/my-lib",
+    "build:debug": "napi build --platform native-dist/my-lib",
     "format": "run-p format:prettier format:rs format:toml",
     "format:prettier": "prettier . -w",
     "format:toml": "taplo format",
