@@ -21,12 +21,8 @@ impl Car {
 }
 
 #[napi]
-pub fn times_2(mut input: Vec<u32>) -> Vec<u32> {
-  for i in 0..input.len() {
-    input[i] = input[i] * 2;
-  }
-
-  return input;
+pub fn times_2_num(num: i32) -> i32 {
+  num * 2
 }
 
 #[napi]

@@ -310,8 +310,8 @@ if (!nativeBinding) {
   throw new Error(`Failed to load native binding`)
 }
 
-const { Car, times2, walkWithCar } = nativeBinding
+const { Car, times2Num, walkWithCar } = nativeBinding
 
 module.exports.Car = Car
-module.exports.times2 = times2
+module.exports.times2Num = times2Num
 module.exports.walkWithCar = walkWithCar
