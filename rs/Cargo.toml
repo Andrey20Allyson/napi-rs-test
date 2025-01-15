@@ -12,6 +12,7 @@ crate-type = ["cdylib"]
 [dependencies]
 napi        = "2"
 napi-derive = "2"
+rand = "0.8.5"
 
 [build-dependencies]
 napi-build = "2"

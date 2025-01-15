@@ -1,6 +1,7 @@
 #![deny(clippy::all)]
 
 use napi_derive::napi;
+use rand::prelude::*;
 
 #[napi]
 pub struct Car {
@@ -68,6 +69,11 @@ pub fn highest_prime(upper_limit: i64) -> i64 {
   }
 
   return largest_prime;
+}
+
+#[napi]
+pub fn get_random_in_range(min: i64, max: i64) -> i64 {
+  thread_rng().gen_range(min..max)
 }
 
 #[napi]

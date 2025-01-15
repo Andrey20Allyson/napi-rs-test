@@ -1,4 +1,4 @@
-const { highestPrime } = require("./dist/native/my-lib");
+const { highestPrime, getRandomInRange } = require("./dist/native/my-lib");
 
 function isPrime(number) {
   if (number <= 1) {
@@ -39,3 +39,5 @@ console.time("JS Find Prime");
 result = highestPrimeJs(input);
 console.timeEnd("JS Find Prime");
 console.log(result);
+
+console.log(getRandomInRange(0, 1000));
