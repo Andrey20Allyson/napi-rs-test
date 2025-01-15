@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
-    "build": "napi build --platform --release native-dist/my-lib",
-    "build:debug": "napi build --platform native-dist/my-lib"
+    "build": "napi build --cargo-cwd rs --platform --release dist/native/my-lib",
+    "build:debug": "napi build --cargo-cwd rs --platform dist/native/my-lib"
   },
   "napi": {
     "name": "my-native",

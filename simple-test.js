@@ -1,4 +1,4 @@
-const { highestPrime } = require("./native-dist/my-lib");
+const { highestPrime } = require("./dist/native/my-lib");
 
 function isPrime(number) {
   if (number <= 1) {
@@ -27,7 +27,7 @@ function highestPrimeJs(upper_limit) {
   return largest_prime;
 }
 
-const input = 70_000;
+const input = 20_000;
 let result;
 
 console.time("Native Find Prime");
