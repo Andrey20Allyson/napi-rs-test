@@ -73,6 +73,6 @@ pub fn highest_prime(upper_limit: i64) -> i64 {
 #[napi]
 pub fn walk_with_car() -> Car {
   Car {
-    name: "Opala".to_string()
+    name: "Opalaa".to_string(),
   }
 }
