@@ -3,26 +3,8 @@
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
-    "build": "napi build --cargo-cwd rs --platform --release dist/native/my-lib",
-    "build:debug": "napi build --cargo-cwd rs --platform dist/native/my-lib"
-  },
-  "napi": {
-    "name": "my-native",
-    "triples": {
-      "defaults": true,
-      "additional": [
-        "x86_64-unknown-linux-musl",
-        "aarch64-unknown-linux-gnu",
-        "i686-pc-windows-msvc",
-        "armv7-unknown-linux-gnueabihf",
-        "aarch64-apple-darwin",
-        "aarch64-linux-android",
-        "x86_64-unknown-freebsd",
-        "aarch64-unknown-linux-musl",
-        "aarch64-pc-windows-msvc",
-        "armv7-linux-androideabi"
-      ]
-    }
+    "build": "napi build --config rs/napi-rs.config.json --cargo-cwd rs --platform --release dist/native/my-lib",
+    "build:debug": "napi build --config rs/napi-rs.config.json --cargo-cwd rs --platform dist/native/my-lib"
   },
   "engines": {
     "node": ">= 10"
