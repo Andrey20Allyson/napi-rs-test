@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Bench } from 'tinybench'
 
 import { plus100 } from '../index.js'
