@@ -39,11 +39,14 @@ fn create_schedule_table(config: &JsExtraScheduleTableCreateConfig) -> ExtraSche
   let mut table = ExtraScheduleTable::new(month);
 
   for worker_config in config.workers.iter() {
-    table.add_worker(Worker {
+    let worker = Worker {
       id: worker_config.id,
       gender: Gender(worker_config.gender),
       grad: Graduation(worker_config.grad),
-    });
+      ..Default::default()
+    };
+
+    table.add_worker(worker);
   }
 
   table

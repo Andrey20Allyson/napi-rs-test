@@ -20,7 +20,7 @@ impl Default for AssignStep {
     AssignStep {
       duty_min_distance: 2,
       min: 1,
-      max: 1,
+      max: 2,
       full_day: false,
       in_pairs: true,
       current_duty_limit: 1,
@@ -96,6 +96,7 @@ impl ScheduleAssigner {
   ) -> bool {
     for duty_ref in duty_refs {
       let worker = table.get_worker(worker_ref);
+      let worker_assigment_info = table.get_worker_assigment_info(worker_ref);
       let duty = table.get_duty(duty_ref);
 
       // [rule set]
@@ -112,6 +113,11 @@ impl ScheduleAssigner {
 
       // duty limit
       if duty.workers_len >= self.step.current_duty_limit {
+        return false;
+      }
+
+      // worker limit
+      if worker_assigment_info.assigment_count >= worker.assign_limit {
         return false;
       }
 

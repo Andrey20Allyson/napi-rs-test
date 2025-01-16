@@ -26,6 +26,16 @@ let out = startScheduleAssign(
         gender: Gender.male,
         grad: Graduation.gcm,
       },
+      {
+        id: 452,
+        gender: Gender.fem,
+        grad: Graduation.gcm,
+      },
+      {
+        id: 252,
+        gender: Gender.male,
+        grad: Graduation.gcm,
+      },
     ],
   })
 );
@@ -37,3 +47,5 @@ if (out.assignState.length > 0) {
   console.assert(typeof out.assignState[0].dutyIndex === "number");
   console.assert(typeof out.assignState[0].workerId === "number");
 }
+
+console.log(out);

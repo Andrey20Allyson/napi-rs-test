@@ -1,10 +1,11 @@
 use super::constants::U8_NULL;
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct Worker {
   pub id: u32,
   pub gender: Gender,
   pub grad: Graduation,
+  pub assign_limit: u8,
 }
 
 impl Default for Worker {
@@ -13,11 +14,12 @@ impl Default for Worker {
       id: 0,
       gender: Gender(U8_NULL),
       grad: Graduation(U8_NULL),
+      assign_limit: 10,
     }
   }
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct Gender(pub u8);
 
 impl Gender {
@@ -30,7 +32,7 @@ impl Gender {
   }
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct Graduation(pub u8);
 
 impl Graduation {

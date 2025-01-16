@@ -1,5 +1,5 @@
 use super::{
-  constants::{DUTY_QUANTITY, NUM_OF_DAYS_PER_MONTH, WORKER_LIMIT},
+  constants::{DUTY_QUANTITY, NUM_OF_DAYS_PER_MONTH, U8_NULL, WORKER_LIMIT},
   day_ref::DayRefArray,
   duty::ExtraDuty,
   duty_ref::{DutyRef, DutyRefIter},
@@ -28,10 +28,42 @@ impl Month {
   }
 }
 
+#[derive(Clone, Copy)]
+pub struct WorkerAssigmentInfo {
+  pub assigment_count: u8,
+}
+
+impl WorkerAssigmentInfo {
+  pub fn new() -> Self {
+    WorkerAssigmentInfo { assigment_count: 0 }
+  }
+
+  pub fn add_assigment_count(&mut self) {
+    self.assigment_count += 1;
+  }
+
+  pub fn sub_assigment_count(&mut self) {
+    self.assigment_count -= 1;
+  }
+
+  pub fn reset_assigment_count(&mut self) {
+    self.assigment_count = 0;
+  }
+}
+
+impl Default for WorkerAssigmentInfo {
+  fn default() -> Self {
+    WorkerAssigmentInfo {
+      assigment_count: U8_NULL,
+    }
+  }
+}
+
 pub struct ExtraScheduleTable {
   pub month: Month,
   pub duties: [ExtraDuty; DUTY_QUANTITY],
   pub workers: [Worker; WORKER_LIMIT],
+  pub worker_assigment_infos: [WorkerAssigmentInfo; WORKER_LIMIT],
   pub workers_len: u8,
 }
 
@@ -41,12 +73,17 @@ impl ExtraScheduleTable {
       month,
       duties: [Default::default(); DUTY_QUANTITY],
       workers: [Default::default(); WORKER_LIMIT],
+      worker_assigment_infos: [Default::default(); WORKER_LIMIT],
       workers_len: 0,
     }
   }
 
   pub fn add_worker_to_duty(&mut self, duty_ref: DutyRef, worker_ref: WorkerRef) {
     let worker_grad = self.get_worker(worker_ref).grad;
+
+    let worker_assigment_info = self.get_worker_assigment_info_mut(worker_ref);
+
+    worker_assigment_info.add_assigment_count();
 
     let duty = self.get_duty_mut(duty_ref);
 
@@ -76,11 +113,23 @@ impl ExtraScheduleTable {
 
   pub fn add_worker(&mut self, worker: Worker) {
     self.workers[self.workers_len as usize] = worker;
+    self.worker_assigment_infos[self.workers_len as usize] = WorkerAssigmentInfo::new();
     self.workers_len += 1;
   }
 
   pub fn get_worker(&self, worker_ref: WorkerRef) -> &Worker {
     &self.workers[worker_ref.0 as usize]
+  }
+
+  pub fn get_worker_assigment_info_mut(
+    &mut self,
+    worker_ref: WorkerRef,
+  ) -> &mut WorkerAssigmentInfo {
+    &mut self.worker_assigment_infos[worker_ref.into_index()]
+  }
+
+  pub fn get_worker_assigment_info(&self, worker_ref: WorkerRef) -> &WorkerAssigmentInfo {
+    &self.worker_assigment_infos[worker_ref.into_index()]
   }
 
   pub fn get_worker_ref_array(&self) -> WorkerRefArray {
