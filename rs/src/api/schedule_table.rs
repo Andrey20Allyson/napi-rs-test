@@ -13,6 +13,8 @@ pub struct JsMonthConfig {
 #[napi(js_name = "WorkerInfoConfig", object)]
 pub struct JsWorkerInfoConfig {
   pub id: u32,
+  pub gender: u8,
+  pub grad: u8,
 }
 
 #[derive(Clone)]

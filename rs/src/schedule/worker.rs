@@ -18,7 +18,7 @@ impl Default for Worker {
 }
 
 #[derive(Clone, Copy)]
-pub struct Gender(u8);
+pub struct Gender(pub u8);
 
 impl Gender {
   pub fn is_male(&self) -> bool {
@@ -31,7 +31,7 @@ impl Gender {
 }
 
 #[derive(Clone, Copy)]
-pub struct Graduation(u8);
+pub struct Graduation(pub u8);
 
 impl Graduation {
   pub fn is_insp(&self) -> bool {

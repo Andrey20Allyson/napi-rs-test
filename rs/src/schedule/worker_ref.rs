@@ -44,4 +44,34 @@ impl WorkerRefArray {
   pub fn randomize(&mut self) {
     randomizer::randomize_array(&mut self.array, self.len);
   }
+
+  pub fn iter(&self) -> WorkerRefIter {
+    WorkerRefIter::new(self)
+  }
+}
+
+pub struct WorkerRefIter<'a> {
+  array: &'a WorkerRefArray,
+  idx: usize,
+}
+
+impl<'a> WorkerRefIter<'a> {
+  pub fn new(array: &'a WorkerRefArray) -> Self {
+    WorkerRefIter { array, idx: 0 }
+  }
+}
+
+impl<'a> std::iter::Iterator for WorkerRefIter<'a> {
+  type Item = WorkerRef;
+
+  fn next(&mut self) -> Option<Self::Item> {
+    if self.idx >= self.array.len {
+      return None;
+    }
+
+    let duty_ref = self.array.array[self.idx];
+    self.idx += 1;
+
+    Some(duty_ref)
+  }
 }

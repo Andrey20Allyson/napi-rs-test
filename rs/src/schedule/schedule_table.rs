@@ -2,7 +2,7 @@ use super::{
   constants::{DUTY_QUANTITY, NUM_OF_DAYS_PER_MONTH, WORKER_LIMIT},
   day_ref::DayRefArray,
   duty::ExtraDuty,
-  duty_ref::DutyRef,
+  duty_ref::{DutyRef, DutyRefIter},
   worker::Worker,
   worker_ref::{WorkerRef, WorkerRefArray},
 };
@@ -58,6 +58,16 @@ impl ExtraScheduleTable {
     } else if worker_grad.is_sub() {
       duty.sub_count += 1;
     }
+  }
+
+  pub fn add_worker_to_duties(&mut self, duty_refs: DutyRefIter, worker_ref: WorkerRef) {
+    for duty_ref in duty_refs {
+      self.add_worker_to_duty(duty_ref, worker_ref);
+    }
+  }
+
+  pub fn get_duty(&self, duty_ref: DutyRef) -> &ExtraDuty {
+    &self.duties[duty_ref.get_duty_index()]
   }
 
   pub fn get_duty_mut(&mut self, duty_ref: DutyRef) -> &mut ExtraDuty {
