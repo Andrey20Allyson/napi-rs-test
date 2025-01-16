@@ -3,7 +3,8 @@ use napi_derive::napi;
 use crate::{
   assigner::assigner::ScheduleAssigner,
   schedule::{
-    schedule_table::{ExtraScheduleTable, Month},
+    month::Month,
+    schedule_table::ExtraScheduleTable,
     worker::{Gender, Graduation, Worker},
   },
 };

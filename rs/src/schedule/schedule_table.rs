@@ -1,32 +1,12 @@
 use super::{
-  constants::{DUTY_QUANTITY, NUM_OF_DAYS_PER_MONTH, U8_NULL, WORKER_LIMIT},
+  constants::{DUTY_QUANTITY, U8_NULL, WORKER_LIMIT},
   day_ref::DayRefArray,
   duty::ExtraDuty,
   duty_ref::{DutyRef, DutyRefIter},
+  month::Month,
   worker::Worker,
   worker_ref::{WorkerRef, WorkerRefArray},
 };
-
-#[derive(Clone, Copy)]
-pub struct Month {
-  pub year: u16,
-  pub index: u16,
-  num_of_days: u8,
-}
-
-impl Month {
-  pub fn new(year: u16, index: u16) -> Self {
-    Month {
-      year,
-      index,
-      num_of_days: NUM_OF_DAYS_PER_MONTH[index as usize],
-    }
-  }
-
-  pub fn get_num_of_days(&self) -> u8 {
-    self.num_of_days
-  }
-}
 
 #[derive(Clone, Copy)]
 pub struct WorkerAssigmentInfo {
