@@ -1,3 +1,15 @@
-const { ExtraScheduleTable } = require("./dist/native/my-lib");
+const {
+  ExtraScheduleTable,
+  startScheduleAssign,
+} = require("./dist/native/my-lib");
 
-console.log(new ExtraScheduleTable({ month: { year: 4, index: 1 } }).month);
+startScheduleAssign(
+  new ExtraScheduleTable({
+    month: { year: 2025, index: 0 },
+    workers: [
+      {
+        id: 1,
+      },
+    ],
+  })
+);
