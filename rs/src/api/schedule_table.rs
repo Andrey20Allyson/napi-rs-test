@@ -33,10 +33,6 @@ pub struct JsExtraScheduleTable {
 impl JsExtraScheduleTable {
   #[napi(constructor)]
   pub fn new(config: JsExtraScheduleTableCreateConfig) -> napi::Result<Self> {
-    let month: i32 = config.month.index;
-
-    println!("month: {}", month);
-
     Ok(JsExtraScheduleTable { config })
   }
 }

@@ -46,18 +46,19 @@ impl WorkerRefArray {
   }
 
   pub fn iter(&self) -> WorkerRefIter {
-    WorkerRefIter::new(self)
+    WorkerRefIter::new(&self.array, self.len)
   }
 }
 
 pub struct WorkerRefIter<'a> {
-  array: &'a WorkerRefArray,
+  array: &'a [WorkerRef],
+  end: usize,
   idx: usize,
 }
 
 impl<'a> WorkerRefIter<'a> {
-  pub fn new(array: &'a WorkerRefArray) -> Self {
-    WorkerRefIter { array, idx: 0 }
+  pub fn new(array: &'a [WorkerRef], end: usize) -> Self {
+    WorkerRefIter { array, end, idx: 0 }
   }
 }
 
@@ -65,11 +66,11 @@ impl<'a> std::iter::Iterator for WorkerRefIter<'a> {
   type Item = WorkerRef;
 
   fn next(&mut self) -> Option<Self::Item> {
-    if self.idx >= self.array.len {
+    if self.idx >= self.end {
       return None;
     }
 
-    let duty_ref = self.array.array[self.idx];
+    let duty_ref = self.array[self.idx];
     self.idx += 1;
 
     Some(duty_ref)

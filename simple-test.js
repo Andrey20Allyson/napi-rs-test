@@ -14,7 +14,10 @@ const Graduation = {
   gcm: 3,
 };
 
-startScheduleAssign(
+const lbl = "Assignment";
+
+console.time(lbl);
+let out = startScheduleAssign(
   new ExtraScheduleTable({
     month: { year: 2025, index: 0 },
     workers: [
@@ -26,3 +29,11 @@ startScheduleAssign(
     ],
   })
 );
+console.timeEnd(lbl);
+
+console.assert(out.assignState instanceof Array);
+if (out.assignState.length > 0) {
+  console.assert(typeof out.assignState[0].dayIndex === "number");
+  console.assert(typeof out.assignState[0].dutyIndex === "number");
+  console.assert(typeof out.assignState[0].workerId === "number");
+}

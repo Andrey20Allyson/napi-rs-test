@@ -33,6 +33,12 @@ pub struct ScheduleAssigner {
 }
 
 impl ScheduleAssigner {
+  pub fn new() -> Self {
+    ScheduleAssigner {
+      step: Default::default(),
+    }
+  }
+
   pub fn assign(&mut self, table: &mut ExtraScheduleTable) {
     let mut worker_refs = table.get_worker_ref_array();
 

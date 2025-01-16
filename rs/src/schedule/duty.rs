@@ -1,4 +1,7 @@
-use super::{constants::WORKER_PER_DUTY, worker_ref::WorkerRef};
+use super::{
+  constants::WORKER_PER_DUTY,
+  worker_ref::{WorkerRef, WorkerRefIter},
+};
 
 #[derive(Clone, Copy)]
 pub struct ExtraDuty {
@@ -54,6 +57,10 @@ impl ExtraDuty {
 
   pub fn is_full(&self) -> bool {
     self.workers_len == WORKER_PER_DUTY as u8
+  }
+
+  pub fn iter_worker_refs(&self) -> WorkerRefIter {
+    WorkerRefIter::new(&self.workers, self.workers_len as usize)
   }
 }
 
