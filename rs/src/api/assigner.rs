@@ -6,10 +6,12 @@ use super::schedule_table::JsExtraScheduleTable;
 
 #[napi]
 pub fn start_schedule_assign(table: &JsExtraScheduleTable) {
-  let mut table = create_schedule_table(table);
+  let table = create_schedule_table(table);
 
-  println!("{:#?}", table.get_days_range());
-  println!("{:#?}", table.get_days_range());
+  let mut day_refs = table.get_day_ref_array();
+  day_refs.randomize();
+
+  println!("{:#?}", day_refs);
 }
 
 pub fn create_schedule_table(table: &JsExtraScheduleTable) -> ExtraScheduleTable {

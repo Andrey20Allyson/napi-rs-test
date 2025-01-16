@@ -1,5 +1,6 @@
-use crate::schedule::schedule_table::{
-  DutyRef, ExtraDuty, ExtraScheduleTable, Worker, WorkerRef, WorkerRefArray,
+use crate::schedule::{
+  day_ref::DayRefArray, duty::ExtraDuty, schedule_table::ExtraScheduleTable, worker::Worker,
+  worker_ref::WorkerRefArray,
 };
 
 pub struct AssignStep {
@@ -31,14 +32,29 @@ pub struct ScheduleAssigner {
 
 impl ScheduleAssigner {
   pub fn assign(&mut self, table: &mut ExtraScheduleTable) {
-    let mut worker_refs = table.get_worker_ref_array();
+    let worker_refs = table.get_worker_ref_array();
 
-    self.assign_array(table, worker_refs);
+    let mut day_refs = table.get_day_ref_array();
+
+    for limit in self.step.min..=self.step.max {
+      self.step.current_duty_limit = limit;
+
+      day_refs.randomize();
+
+      self.assign_in_days(table, &day_refs, &worker_refs);
+    }
   }
 
-  pub fn assign_array(&mut self, table: &mut ExtraScheduleTable, worker_refs: WorkerRefArray) {}
+  pub fn assign_in_days(
+    &mut self,
+    table: &mut ExtraScheduleTable,
+    day_refs: &DayRefArray,
+    worker_refs: &WorkerRefArray,
+  ) {
+    for day_ref in day_refs.iter() {}
+  }
 
-  pub fn assign_in_day(&mut self, table: &mut ExtraScheduleTable, worker_refs: WorkerRefArray) {}
+  pub fn assign_full_day(&mut self, table: &mut ExtraScheduleTable, worker_refs: &WorkerRefArray) {}
 
   pub fn can_assing(
     &self,
