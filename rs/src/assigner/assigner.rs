@@ -154,7 +154,7 @@ impl ScheduleAssigner {
     worker_ref: WorkerRef,
     duty_refs: &impl RefIterable<DutyRef>,
   ) -> bool {
-    if self.can_assing(table, duty_refs.iter(), worker_ref) {
+    if self.can_assing(table, duty_refs.iter(), worker_ref) == false {
       return false;
     }
 
