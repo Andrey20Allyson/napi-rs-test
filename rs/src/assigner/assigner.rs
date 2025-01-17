@@ -40,6 +40,14 @@ impl ScheduleAssigner {
     }
   }
 
+  pub fn from_step(step: AssignStep) -> Self {
+    ScheduleAssigner { step }
+  }
+
+  pub fn set_step(&mut self, step: AssignStep) {
+    self.step = step;
+  }
+
   pub fn assign(&mut self, table: &mut ExtraScheduleTable) {
     let mut worker_refs = table.get_worker_ref_array();
 
