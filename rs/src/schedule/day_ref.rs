@@ -1,6 +1,6 @@
 use super::{
   constants::{DAY_LIMIT, DUTY_PER_DAY, U8_NULL},
-  duty_ref::{DutyRef, DutyRefOfOneDayArray},
+  duty_ref::{DutyRef, DutyRefOfOneDayArray, DutyRefPairs},
   randomizer,
 };
 
@@ -8,6 +8,10 @@ use super::{
 pub struct DayRef(u8);
 
 impl DayRef {
+  pub fn get_index(&self) -> u8 {
+    self.0
+  }
+
   pub fn get_duty_ref_array(&self) -> DutyRefOfOneDayArray {
     let mut array: [DutyRef; DUTY_PER_DAY] = [Default::default(); DUTY_PER_DAY];
     let mut len: usize = 0;
@@ -18,6 +22,10 @@ impl DayRef {
     }
 
     return DutyRefOfOneDayArray::new(array, len);
+  }
+
+  pub fn get_duty_ref_pairs(self) -> DutyRefPairs {
+    DutyRefPairs::from_day_ref(self)
   }
 }
 
@@ -50,20 +58,20 @@ impl DayRefArray {
     randomizer::randomize_array(&mut self.array, self.len);
   }
 
-  pub fn iter(&self) -> DayRefArrayIter<'_> {
-    return DayRefArrayIter {
+  pub fn iter(&self) -> DayRefIter<'_> {
+    return DayRefIter {
       array: &self,
       iter_count: 0,
     };
   }
 }
 
-pub struct DayRefArrayIter<'a> {
+pub struct DayRefIter<'a> {
   array: &'a DayRefArray,
   iter_count: usize,
 }
 
-impl<'a> std::iter::Iterator for DayRefArrayIter<'a> {
+impl<'a> std::iter::Iterator for DayRefIter<'a> {
   type Item = DayRef;
 
   fn next(&mut self) -> Option<Self::Item> {

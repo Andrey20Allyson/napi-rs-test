@@ -1,11 +1,8 @@
-use napi_derive::napi;
-
 use super::constants::NUM_OF_DAYS_PER_MONTH;
 
 const DAY_OR_WEEK_MONTH_CORRESPONDENCE: [u16; 12] = [0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4];
 
-#[napi]
-pub fn day_of_week(mut year: u16, mut month: u16, mut day: u16) -> u8 {
+pub fn calc_day_of_week(mut year: u16, mut month: u16, mut day: u16) -> u8 {
   month += 1;
   day += 1;
 
@@ -25,6 +22,7 @@ pub struct Month {
   pub year: u16,
   pub index: u16,
   num_of_days: u8,
+  first_day_of_week: u8,
 }
 
 impl Month {
@@ -33,10 +31,15 @@ impl Month {
       year,
       index,
       num_of_days: NUM_OF_DAYS_PER_MONTH[index as usize],
+      first_day_of_week: calc_day_of_week(year, index, 0),
     }
   }
 
   pub fn get_num_of_days(&self) -> u8 {
     self.num_of_days
+  }
+
+  pub fn week_day_of(&self, day: u8) -> u8 {
+    (self.first_day_of_week + day) % 7
   }
 }

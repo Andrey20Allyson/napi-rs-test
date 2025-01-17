@@ -2,7 +2,7 @@ use super::{
   constants::{DUTY_QUANTITY, U8_NULL, WORKER_LIMIT},
   day_ref::DayRefArray,
   duty::ExtraDuty,
-  duty_ref::{DutyRef, DutyRefIter},
+  duty_ref::{DutyRef, RefIterator},
   month::Month,
   worker::Worker,
   worker_ref::{WorkerRef, WorkerRefArray},
@@ -77,7 +77,7 @@ impl ExtraScheduleTable {
     }
   }
 
-  pub fn add_worker_to_duties(&mut self, duty_refs: DutyRefIter, worker_ref: WorkerRef) {
+  pub fn add_worker_to_duties(&mut self, duty_refs: RefIterator<DutyRef>, worker_ref: WorkerRef) {
     for duty_ref in duty_refs {
       self.add_worker_to_duty(duty_ref, worker_ref);
     }

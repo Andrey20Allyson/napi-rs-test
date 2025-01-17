@@ -1,5 +1,3 @@
-const lib = require("./dist/native/my-lib");
-
 function dayOfWeek(year, month, day) {
   month += 1;
   day += 1;
@@ -17,6 +15,6 @@ function dayOfWeek(year, month, day) {
   );
 }
 
-console.assert(lib.dayOfWeek(2031, 2, 0) === dayOfWeek(2031, 2, 0));
-console.assert(lib.dayOfWeek(2025, 0, 4) === dayOfWeek(2025, 0, 4));
-console.assert(lib.dayOfWeek(2025, 0, 0) === dayOfWeek(2025, 0, 0));
+console.log(dayOfWeek(2031, 2, 0));
+console.log(dayOfWeek(2025, 0, 4));
+console.log(dayOfWeek(2025, 0, 0));

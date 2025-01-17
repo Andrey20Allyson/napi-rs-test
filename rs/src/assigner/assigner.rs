@@ -1,6 +1,7 @@
 use crate::schedule::{
+  constants::week_days,
   day_ref::{DayRef, DayRefArray},
-  duty_ref::DutyRefIter,
+  duty_ref::{DutyRef, RefIterable, RefIterator},
   schedule_table::ExtraScheduleTable,
   worker_ref::{WorkerRef, WorkerRefArray},
 };
@@ -64,7 +65,15 @@ impl ScheduleAssigner {
     worker_refs: &mut WorkerRefArray,
   ) {
     for day_ref in day_refs.iter() {
-      self.assign_full_day(table, day_ref, worker_refs);
+      if self.step.full_day {
+        self.assign_full_day(table, day_ref, worker_refs);
+        continue;
+      }
+
+      if self.step.in_pairs {
+        self.assign_in_pairs(table, day_ref, worker_refs);
+        continue;
+      }
     }
   }
 
@@ -74,25 +83,83 @@ impl ScheduleAssigner {
     day_ref: DayRef,
     worker_refs: &mut WorkerRefArray,
   ) {
-    let duty_refs = day_ref.get_duty_ref_array();
+    let duty_refs = day_ref.get_duty_ref_pairs().joined();
 
     worker_refs.randomize();
 
     for worker_ref in worker_refs.iter() {
-      let can_assign = self.can_assing(table, worker_ref, duty_refs.iter());
-      if can_assign == false {
-        continue;
-      }
-
-      table.add_worker_to_duties(duty_refs.iter(), worker_ref);
+      self.try_assign(table, worker_ref, &duty_refs);
     }
+  }
+
+  pub fn assign_in_pairs(
+    &mut self,
+    table: &mut ExtraScheduleTable,
+    day_ref: DayRef,
+    worker_refs: &mut WorkerRefArray,
+  ) {
+    let mut duty_ref_pairs = day_ref.get_duty_ref_pairs();
+
+    let is_monday = table.month.week_day_of(day_ref.get_index()) == week_days::MONDAY;
+
+    if is_monday {
+      duty_ref_pairs.randomize();
+    }
+
+    worker_refs.randomize();
+
+    let first_pair = duty_ref_pairs.get_first_pair();
+
+    for worker_ref in worker_refs.iter() {
+      self.try_assign(table, worker_ref, &first_pair);
+    }
+
+    worker_refs.randomize();
+
+    let second_pair = duty_ref_pairs.get_second_pair();
+
+    for worker_ref in worker_refs.iter() {
+      self.try_assign(table, worker_ref, &second_pair);
+    }
+  }
+
+  pub fn assign_in_day(
+    &mut self,
+    table: &mut ExtraScheduleTable,
+    day_ref: DayRef,
+    worker_refs: &mut WorkerRefArray,
+  ) {
+    let duty_refs = day_ref.get_duty_ref_array();
+
+    for duty_ref in duty_refs.iter() {
+      let iterable_duty_ref = duty_ref.into_iterable();
+
+      for worker_ref in worker_refs.iter() {
+        self.try_assign(table, worker_ref, &iterable_duty_ref);
+      }
+    }
+  }
+
+  pub fn try_assign(
+    &self,
+    table: &mut ExtraScheduleTable,
+    worker_ref: WorkerRef,
+    duty_refs: &impl RefIterable<DutyRef>,
+  ) -> bool {
+    if self.can_assing(table, duty_refs.iter(), worker_ref) {
+      return false;
+    }
+
+    table.add_worker_to_duties(duty_refs.iter(), worker_ref);
+
+    return true;
   }
 
   pub fn can_assing(
     &self,
     table: &mut ExtraScheduleTable,
+    duty_refs: RefIterator<DutyRef>,
     worker_ref: WorkerRef,
-    duty_refs: DutyRefIter,
   ) -> bool {
     for duty_ref in duty_refs {
       let worker = table.get_worker(worker_ref);
