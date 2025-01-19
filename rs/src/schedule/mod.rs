@@ -3,6 +3,7 @@ pub mod day_ref;
 pub mod duty;
 pub mod duty_ref;
 pub mod month;
+pub mod ordinary_info;
 pub mod randomizer;
 pub mod schedule_table;
 pub mod worker;

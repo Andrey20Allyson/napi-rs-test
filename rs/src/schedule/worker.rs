@@ -1,4 +1,4 @@
-use super::constants::U8_NULL;
+use super::{constants::U8_NULL, ordinary_info::OrdinaryInfo};
 
 #[derive(Clone, Copy, Debug)]
 pub struct Worker {
@@ -6,6 +6,7 @@ pub struct Worker {
   pub gender: Gender,
   pub grad: Graduation,
   pub assign_limit: u8,
+  pub ordinary_info: OrdinaryInfo,
 }
 
 impl Default for Worker {
@@ -15,6 +16,7 @@ impl Default for Worker {
       gender: Gender(U8_NULL),
       grad: Graduation(U8_NULL),
       assign_limit: 10,
+      ordinary_info: OrdinaryInfo::default(),
     }
   }
 }

@@ -13,3 +13,7 @@ where
     i -= 1;
   }
 }
+
+pub fn random_chance<T>(chance: f64) -> bool {
+  rand::thread_rng().gen_bool(chance)
+}

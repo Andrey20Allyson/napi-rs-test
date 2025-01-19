@@ -39,6 +39,7 @@ impl Default for WorkerAssigmentInfo {
   }
 }
 
+#[derive(Clone, Copy)]
 pub struct ExtraScheduleTable {
   pub month: Month,
   pub duties: [ExtraDuty; DUTY_QUANTITY],

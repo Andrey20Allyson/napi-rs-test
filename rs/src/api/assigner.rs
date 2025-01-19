@@ -10,7 +10,7 @@ use crate::{
   },
 };
 
-use super::schedule_table::{JsExtraScheduleTable, JsExtraScheduleTableCreateConfig};
+use super::schedule_table::JsExtraScheduleTableCreateConfig;
 
 #[napi(js_name = "ScheduleAssignState", object)]
 pub struct JsScheduleAssignState {
@@ -25,8 +25,10 @@ pub struct JsExtraScheduleTableOutputConfig {
 }
 
 #[napi]
-pub fn start_schedule_assign(table: &JsExtraScheduleTable) -> JsExtraScheduleTableOutputConfig {
-  let mut table = create_schedule_table(&table.config);
+pub fn start_schedule_assign(
+  config: JsExtraScheduleTableCreateConfig,
+) -> JsExtraScheduleTableOutputConfig {
+  let mut table = create_schedule_table(&config);
 
   let mut assigner = ScheduleAssigner::new();
 

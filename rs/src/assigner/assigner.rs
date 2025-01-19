@@ -1,12 +1,42 @@
 use crate::schedule::{
   constants::week_days,
   day_ref::{DayRef, DayRefArray},
+  duty::ExtraDuty,
   duty_ref::{DutyRef, RefIterable, RefIterator},
   schedule_table::ExtraScheduleTable,
+  worker::Worker,
   worker_ref::{WorkerRef, WorkerRefArray},
 };
 
+pub struct AssignInfo<'a> {
+  pub table: &'a ExtraScheduleTable,
+  pub duty_ref: DutyRef,
+  pub duty: &'a ExtraDuty,
+  pub worker_ref: WorkerRef,
+  pub worker: &'a Worker,
+}
+
+type AssignCheckFn = fn(info: AssignInfo) -> bool;
+
+pub struct PreAssignDayInfo<'a> {
+  pub table: &'a ExtraScheduleTable,
+  pub day_ref: DayRef,
+}
+
+type PreAssignDayCheckFn = fn(info: PreAssignDayInfo) -> bool;
+
+pub struct PreAssignInfo<'a> {
+  pub table: &'a ExtraScheduleTable,
+  pub worker_ref: WorkerRef,
+  pub worker: &'a Worker,
+}
+
+type PreAssignInfoCheckFn = fn(info: PreAssignInfo) -> bool;
+
 pub struct AssignStep {
+  pub pass_worker_when: PreAssignInfoCheckFn,
+  pub pass_day_when: PreAssignDayCheckFn,
+  pub pass_duty_pair_when: AssignCheckFn,
   pub in_pairs: bool,
   pub full_day: bool,
   pub min: u8,
@@ -19,6 +49,9 @@ pub struct AssignStep {
 impl Default for AssignStep {
   fn default() -> Self {
     AssignStep {
+      pass_worker_when: |_| false,
+      pass_day_when: |_| false,
+      pass_duty_pair_when: |_| false,
       duty_min_distance: 2,
       min: 1,
       max: 2,
