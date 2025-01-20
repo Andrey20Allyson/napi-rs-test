@@ -18,8 +18,17 @@ pub struct JsWorkerInfoConfig {
 }
 
 #[derive(Clone)]
-#[napi(js_name = "ExtraScheduleTableCreateConfig", object)]
+#[napi(js_name = "QualifierConfig", object)]
+pub struct JsQualifierConfig {
+  pub tries_limit: u32,
+  pub thread_cap: Option<u32>,
+  pub use_threads: Option<bool>,
+}
+
+#[derive(Clone)]
+#[napi(object)]
 pub struct JsExtraScheduleTableCreateConfig {
+  pub qualifier: JsQualifierConfig,
   pub month: JsMonthConfig,
   pub workers: Vec<JsWorkerInfoConfig>,
 }

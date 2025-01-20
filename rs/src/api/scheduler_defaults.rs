@@ -1,7 +1,7 @@
 use crate::{assigner::assigner::AssignStep, schedule::constants::week_days};
 
-pub fn get_default_assign_steps() -> [AssignStep; 9] {
-  [
+pub fn get_default_assign_steps() -> Vec<AssignStep> {
+  vec![
     AssignStep {
       only_worker_where: |info| info.worker.ordinary_info.duration == 24,
       full_day: true,

@@ -112,19 +112,22 @@ impl IntegritySummary {
 
 type IntegrityChecker = fn(&mut IntegritySummary, &ExtraScheduleTable) -> ();
 
-pub struct Qualifier<'a> {
+#[derive(Clone)]
+pub struct Qualifier {
   pub tries_limit: u32,
-  pub assign_steps: &'a [AssignStep],
-  pub integrity_checkers: &'a [IntegrityChecker],
+  pub assign_steps: Vec<AssignStep>,
+  pub integrity_checkers: Vec<IntegrityChecker>,
+  pub thread_cap: Option<usize>,
   assinger: ScheduleAssigner,
 }
 
-impl<'a> Qualifier<'a> {
+impl Qualifier {
   pub fn new() -> Self {
     Qualifier {
       tries_limit: 1,
-      assign_steps: &[],
-      integrity_checkers: &[],
+      thread_cap: None,
+      assign_steps: Vec::new(),
+      integrity_checkers: Vec::new(),
       assinger: ScheduleAssigner::new(),
     }
   }
@@ -135,17 +138,20 @@ impl<'a> Qualifier<'a> {
     self
   }
 
-  pub fn set_assign_configs(&mut self, assign_configs: &'a [AssignStep]) -> &mut Self {
+  pub fn set_assign_configs(&mut self, assign_configs: Vec<AssignStep>) -> &mut Self {
     self.assign_steps = assign_configs;
 
     self
   }
 
-  pub fn set_integrity_checkers(
-    &mut self,
-    integrity_checkers: &'a [IntegrityChecker],
-  ) -> &mut Self {
+  pub fn set_integrity_checkers(&mut self, integrity_checkers: Vec<IntegrityChecker>) -> &mut Self {
     self.integrity_checkers = integrity_checkers;
+
+    self
+  }
+
+  pub fn set_thread_cap(&mut self, thread_cap: Option<usize>) -> &mut Self {
+    self.thread_cap = thread_cap;
 
     self
   }
@@ -175,6 +181,61 @@ impl<'a> Qualifier<'a> {
     *table = best_clone;
   }
 
+  pub fn qualify_with_threads(&mut self, table: &mut ExtraScheduleTable) {
+    let available_threads = match self.get_available_threads() {
+      Some(thread_count) => thread_count,
+      None => {
+        self.qualify(table);
+        return;
+      }
+    };
+
+    let mut handlers = Vec::new();
+
+    let tries_limit = (self.tries_limit / available_threads as u32).max(1);
+
+    for _ in 0..available_threads {
+      let mut qualifier_clone = self.clone();
+      let mut table_clone = *table;
+
+      let handle: std::thread::JoinHandle<ExtraScheduleTable> = std::thread::spawn(move || {
+        qualifier_clone.set_tries_limit(tries_limit);
+        qualifier_clone.qualify(&mut table_clone);
+
+        table_clone
+      });
+
+      handlers.push(handle);
+    }
+
+    let mut best_clone = *table;
+    let mut best_integrity = IntegritySummary::wrost();
+
+    for handle in handlers {
+      let current_clone = handle.join().unwrap();
+      let current_integrity = self.check_integrity(table);
+
+      if current_integrity.is_better_than(&best_integrity) {
+        best_clone = current_clone;
+        best_integrity = current_integrity;
+      }
+    }
+
+    *table = best_clone;
+  }
+
+  fn get_available_threads(&self) -> Option<usize> {
+    let thread_count = thread_count();
+
+    match thread_count {
+      Some(thread_count) => match self.thread_cap {
+        Some(thread_cap) => Some(thread_count.min(thread_cap)),
+        None => Some(thread_count),
+      },
+      None => None,
+    }
+  }
+
   pub fn check_integrity(&self, table: &ExtraScheduleTable) -> IntegritySummary {
     let mut summary = IntegritySummary::new();
 
@@ -193,5 +254,12 @@ impl<'a> Qualifier<'a> {
 
       assigner.assign(table);
     }
+  }
+}
+
+fn thread_count() -> Option<usize> {
+  match std::thread::available_parallelism() {
+    Ok(count) => Some(count.get()),
+    Err(_) => None,
   }
 }

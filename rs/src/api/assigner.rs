@@ -40,11 +40,16 @@ pub fn start_schedule_assign(
   let mut qualifier: Qualifier = Qualifier::new();
 
   qualifier
-    .set_tries_limit(1)
-    .set_assign_configs(&assign_steps)
-    .set_integrity_checkers(&[correct_worker_allocation::check, gcm_only::check]);
+    .set_thread_cap(config.qualifier.thread_cap.map(|value| value as usize))
+    .set_tries_limit(config.qualifier.tries_limit)
+    .set_assign_configs(assign_steps)
+    .set_integrity_checkers(vec![correct_worker_allocation::check, gcm_only::check]);
 
-  qualifier.qualify(&mut table);
+  if config.qualifier.use_threads.unwrap_or(true) {
+    qualifier.qualify_with_threads(&mut table);
+  } else {
+    qualifier.qualify(&mut table);
+  }
 
   create_output_config(&table)
 }

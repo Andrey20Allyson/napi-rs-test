@@ -15,6 +15,9 @@ const lbl = "Assignment";
 
 console.time(lbl);
 let out = startScheduleAssign({
+  qualifier: {
+    triesLimit: 14_000,
+  },
   month: { year: 2025, index: 0 },
   workers: [
     {
@@ -56,4 +59,4 @@ let out = startScheduleAssign({
 });
 console.timeEnd(lbl);
 
-console.log(out);
+console.log("assigns: ", out.assignState.length);

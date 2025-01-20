@@ -60,6 +60,7 @@ impl Default for AssignStep {
   }
 }
 
+#[derive(Clone)]
 pub struct ScheduleAssigner {
   pub step: AssignStep,
   current_duty_limit: u8,
