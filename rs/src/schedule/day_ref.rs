@@ -4,10 +4,35 @@ use super::{
   randomizer,
 };
 
+#[derive(Debug)]
+pub enum DayRefError {
+  IncorrectDayIndexInfo(u8),
+}
+
+impl std::fmt::Display for DayRefError {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    match self {
+      DayRefError::IncorrectDayIndexInfo(index) => {
+        write!(f, "Can't turn u8 {} into a DayRef", index)
+      }
+    }
+  }
+}
+
+impl std::error::Error for DayRefError {}
+
 #[derive(Clone, Copy, Debug)]
 pub struct DayRef(u8);
 
 impl DayRef {
+  pub fn from_index(index: u8) -> Result<Self, DayRefError> {
+    if (index as usize) >= DAY_LIMIT {
+      return Err(DayRefError::IncorrectDayIndexInfo(index));
+    }
+
+    Ok(DayRef(index))
+  }
+
   pub fn get_index(&self) -> u8 {
     self.0
   }

@@ -33,8 +33,9 @@ pub struct PreAssignInfo<'a> {
 
 type PreAssignInfoCheckFn = fn(info: PreAssignInfo) -> bool;
 
+#[derive(Clone, Copy)]
 pub struct AssignStep {
-  pub pass_worker_when: PreAssignInfoCheckFn,
+  pub only_worker_where: PreAssignInfoCheckFn,
   pub pass_day_when: PreAssignDayCheckFn,
   pub pass_duty_pair_when: AssignCheckFn,
   pub in_pairs: bool,
@@ -42,14 +43,12 @@ pub struct AssignStep {
   pub min: u8,
   pub max: u8,
   pub duty_min_distance: u8,
-
-  current_duty_limit: u8,
 }
 
 impl Default for AssignStep {
   fn default() -> Self {
     AssignStep {
-      pass_worker_when: |_| false,
+      only_worker_where: |_| false,
       pass_day_when: |_| false,
       pass_duty_pair_when: |_| false,
       duty_min_distance: 2,
@@ -57,28 +56,25 @@ impl Default for AssignStep {
       max: 2,
       full_day: false,
       in_pairs: true,
-      current_duty_limit: 1,
     }
   }
 }
 
 pub struct ScheduleAssigner {
   pub step: AssignStep,
+  current_duty_limit: u8,
 }
 
 impl ScheduleAssigner {
   pub fn new() -> Self {
     ScheduleAssigner {
-      step: Default::default(),
+      step: AssignStep::default(),
+      current_duty_limit: 1,
     }
   }
 
-  pub fn from_step(step: AssignStep) -> Self {
-    ScheduleAssigner { step }
-  }
-
-  pub fn set_step(&mut self, step: AssignStep) {
-    self.step = step;
+  pub fn set_step(&mut self, step: &AssignStep) {
+    self.step = *step;
   }
 
   pub fn assign(&mut self, table: &mut ExtraScheduleTable) {
@@ -86,17 +82,17 @@ impl ScheduleAssigner {
 
     let mut day_refs = table.get_day_ref_array();
 
-    let start_duty_limit = self.step.current_duty_limit;
+    let start_duty_limit = self.current_duty_limit;
 
     for limit in self.step.min..=self.step.max {
-      self.step.current_duty_limit = limit;
+      self.current_duty_limit = limit;
 
       day_refs.randomize();
 
       self.assign_in_days(table, &day_refs, &mut worker_refs);
     }
 
-    self.step.current_duty_limit = start_duty_limit;
+    self.current_duty_limit = start_duty_limit;
   }
 
   pub fn assign_in_days(
@@ -220,7 +216,7 @@ impl ScheduleAssigner {
       }
 
       // duty limit
-      if duty.workers_len >= self.step.current_duty_limit {
+      if duty.workers_len >= self.current_duty_limit {
         return false;
       }
 
@@ -236,6 +232,10 @@ impl ScheduleAssigner {
 
       // insp rule
       if worker.grad.is_insp() && duty.insp_count > 0 {
+        return false;
+      }
+
+      if duty.has(worker_ref) {
         return false;
       }
     }

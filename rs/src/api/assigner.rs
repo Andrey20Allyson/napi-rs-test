@@ -1,8 +1,12 @@
 use napi_derive::napi;
 
 use crate::{
-  assigner::assigner::ScheduleAssigner,
+  qualifier::{
+    integrity_checkers::{correct_worker_allocation, gcm_only},
+    qualifier::Qualifier,
+  },
   schedule::{
+    day_ref::DayRef,
     duty_ref::RefIterable,
     month::Month,
     schedule_table::ExtraScheduleTable,
@@ -10,7 +14,9 @@ use crate::{
   },
 };
 
-use super::schedule_table::JsExtraScheduleTableCreateConfig;
+use super::{
+  schedule_table::JsExtraScheduleTableCreateConfig, scheduler_defaults::get_default_assign_steps,
+};
 
 #[napi(js_name = "ScheduleAssignState", object)]
 pub struct JsScheduleAssignState {
@@ -28,32 +34,44 @@ pub struct JsExtraScheduleTableOutputConfig {
 pub fn start_schedule_assign(
   config: JsExtraScheduleTableCreateConfig,
 ) -> JsExtraScheduleTableOutputConfig {
-  let mut table = create_schedule_table(&config);
+  let assign_steps = get_default_assign_steps();
 
-  let mut assigner = ScheduleAssigner::new();
+  let mut table = create_schedule_table(&config).unwrap();
+  let mut qualifier: Qualifier = Qualifier::new();
 
-  assigner.assign(&mut table);
+  qualifier
+    .set_tries_limit(1)
+    .set_assign_configs(&assign_steps)
+    .set_integrity_checkers(&[correct_worker_allocation::check, gcm_only::check]);
+
+  qualifier.qualify(&mut table);
 
   create_output_config(&table)
 }
 
-fn create_schedule_table(config: &JsExtraScheduleTableCreateConfig) -> ExtraScheduleTable {
+fn create_schedule_table(
+  config: &JsExtraScheduleTableCreateConfig,
+) -> Result<ExtraScheduleTable, Box<dyn std::error::Error>> {
   let month = Month::new(config.month.year as u16, config.month.index as u16);
 
   let mut table = ExtraScheduleTable::new(month);
 
   for worker_config in config.workers.iter() {
-    let worker = Worker {
+    let mut worker = Worker {
       id: worker_config.id,
       gender: Gender(worker_config.gender),
       grad: Graduation(worker_config.grad),
       ..Default::default()
     };
 
+    let d = DayRef::from_index(2)?;
+
+    worker.ordinary_info.set_work_day_to_true(d);
+
     table.add_worker(worker);
   }
 
-  table
+  Ok(table)
 }
 
 fn create_output_config(table: &ExtraScheduleTable) -> JsExtraScheduleTableOutputConfig {

@@ -5,6 +5,7 @@ pub struct OrdinaryInfo {
   work_days: u32,
   pub start: u8,
   pub duration: u8,
+  pub is_daily_worker: bool,
 }
 
 impl OrdinaryInfo {
@@ -39,6 +40,7 @@ impl Default for OrdinaryInfo {
       work_days: 0b0,
       start: 0,
       duration: 0,
+      is_daily_worker: false,
     }
   }
 }

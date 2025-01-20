@@ -1,4 +1,4 @@
-use super::constants::NUM_OF_DAYS_PER_MONTH;
+use super::constants::{week_days, NUM_OF_DAYS_PER_MONTH};
 
 const DAY_OR_WEEK_MONTH_CORRESPONDENCE: [u16; 12] = [0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4];
 
@@ -41,5 +41,13 @@ impl Month {
 
   pub fn week_day_of(&self, day: u8) -> u8 {
     (self.first_day_of_week + day) % 7
+  }
+
+  pub fn is_week_end(&self, day: u8) -> bool {
+    match self.week_day_of(day) {
+      week_days::SATURDAY => true,
+      week_days::SUNDAY => true,
+      _ => false,
+    }
   }
 }

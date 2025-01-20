@@ -14,6 +14,6 @@ where
   }
 }
 
-pub fn random_chance<T>(chance: f64) -> bool {
+pub fn random_chance(chance: f64) -> bool {
   rand::thread_rng().gen_bool(chance)
 }

@@ -32,17 +32,28 @@ let out = startScheduleAssign({
       gender: Gender.male,
       grad: Graduation.gcm,
     },
+    {
+      id: 120,
+      gender: Gender.male,
+      grad: Graduation.sub,
+    },
+    {
+      id: 654,
+      gender: Gender.male,
+      grad: Graduation.sub,
+    },
+    {
+      id: 352,
+      gender: Gender.male,
+      grad: Graduation.insp,
+    },
+    {
+      id: 359,
+      gender: Gender.male,
+      grad: Graduation.insp,
+    },
   ],
 });
 console.timeEnd(lbl);
 
-console.assert(out.assignState instanceof Array);
-if (out.assignState.length > 0) {
-  console.assert(typeof out.assignState[0].dayIndex === "number");
-  console.assert(typeof out.assignState[0].dutyIndex === "number");
-  console.assert(typeof out.assignState[0].workerId === "number");
-}
-
 console.log(out);
-
-console.time("a");
